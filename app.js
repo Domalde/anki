@@ -25,6 +25,7 @@ function saveCards() {
   for (const id of Object.keys(hashes)) if (!ids.has(id)) { delete hashes[id]; tombs.push(id); }
   localStorage.setItem(LS_CARDS, JSON.stringify(cards)); persistMeta();
   window.onLocalChange?.();
+  if (typeof updateBadge === "function") updateBadge();
 }
 function saveCfg(silent) { if (!silent) cfg.updated = Date.now(); localStorage.setItem(LS_CFG, JSON.stringify(cfg)); if (!silent) window.onLocalChange?.(); }
 
@@ -54,14 +55,34 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const today = () => new Date().toISOString().slice(0, 10);
 
 /* ===================== Abas ===================== */
-document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+// Navegação: 4 itens no menu; "Criar" agrupa 3 telas e "Mais" agrupa 3 telas.
+// Cada tela tem endereço próprio (#estudar, #lote...), então o botão Voltar do celular funciona.
+const NAV_GROUP = { lote: "adicionar", doaudio: "adicionar", cartas: "mais", config: "mais", conta: "mais" };
+const isTab = id => !!id && !!document.querySelector(`section.tab#${CSS.escape(id)}`);
+document.querySelectorAll(".mainnav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 document.addEventListener("click", e => { const a = e.target.closest("[data-goto]"); if (a) { e.preventDefault(); showTab(a.dataset.goto); } });
-function showTab(id) {
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+addEventListener("popstate", () => { const id = location.hash.slice(1); if (isTab(id) || !id) showTab(id || "estudar", true); });
+function showTab(id, fromHistory) {
+  if (!isTab(id)) id = "estudar";
+  const top = NAV_GROUP[id] || id;
+  document.querySelectorAll(".mainnav button").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === top);
+    b.toggleAttribute("aria-current", b.dataset.tab === top);
+  });
+  document.querySelectorAll(".segctl a").forEach(a => a.classList.toggle("on", a.dataset.goto === id));
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.id === id));
+  if (!fromHistory && location.hash !== "#" + id) history.pushState(null, "", "#" + id);
+  scrollTo(0, 0);
   if (id === "estudar") nextCard();
   if (id === "cartas") renderTable();
   if (id === "analise") window.renderStats?.();
+}
+// Número de revisões pendentes no botão Estudar
+function updateBadge() {
+  const b = document.getElementById("dueBadge"); if (!b) return;
+  const { review, fresh } = queue(), n = review.length + fresh.length;
+  b.textContent = n > 99 ? "99+" : n; b.classList.toggle("hidden", !n);
+  b.setAttribute("aria-label", `${n} para revisar`);
 }
 
 /* ===================== Áudio / voz ===================== */
@@ -241,6 +262,7 @@ function nextCard() {
     ({ review, fresh, soon } = queue());
     $("#stats").textContent = `Revisar: ${review.length} · Novas: ${fresh.length} · Total: ${cards.length} cartas`;
     current = review[0] || fresh[0] || soon[0] || null;
+    updateBadge();
   }
   $("#practiceBar").classList.toggle("hidden", !practice);
   shownAt = Date.now(); revealedAt = 0;
@@ -535,4 +557,6 @@ $("#importFile").onchange = async e => {
 
 initCfg();
 if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-nextCard();
+const startTab = location.hash.slice(1);
+showTab(isTab(startTab) ? startTab : "estudar", true);
+updateBadge();

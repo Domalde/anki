@@ -37,15 +37,11 @@
 <body>
 <header>
   <div class="brand" aria-label="Meu Anki">🧠 Meu Anki</div>
-  <nav>
-    <button data-tab="estudar" class="active">Estudar</button>
-    <button data-tab="adicionar">Adicionar</button>
-    <button data-tab="lote">Em lote</button>
-    <button data-tab="doaudio">Do áudio</button>
-    <button data-tab="cartas">Cartas</button>
-    <button data-tab="analise">Análise</button>
-    <button data-tab="config">Config</button>
-    <button data-tab="conta" id="navConta">👤 Conta</button>
+  <nav class="mainnav" aria-label="Menu principal">
+    <button data-tab="estudar" class="active"><span class="ni" aria-hidden="true">📚</span><span class="nl">Estudar</span><span id="dueBadge" class="badge hidden"></span></button>
+    <button data-tab="adicionar"><span class="ni" aria-hidden="true">➕</span><span class="nl">Criar</span></button>
+    <button data-tab="analise"><span class="ni" aria-hidden="true">📊</span><span class="nl">Análise</span></button>
+    <button data-tab="mais"><span class="ni" aria-hidden="true">☰</span><span class="nl">Mais</span></button>
   </nav>
   <span id="syncStatus" class="muted small"></span>
 </header>
@@ -153,6 +149,9 @@
 
   <!-- ADICIONAR -->
   <section id="adicionar" class="tab">
+    <div class="segctl" role="tablist" aria-label="Como criar">
+      <a href="#adicionar" data-goto="adicionar" role="tab">Uma frase</a><a href="#lote" data-goto="lote" role="tab">Várias frases</a><a href="#doaudio" data-goto="doaudio" role="tab">De um áudio</a>
+    </div>
     <h2 class="tab-title">Crie um flashcard com áudio</h2>
     <p class="tab-sub">Escreva a frase: a tradução e a pronúncia saem sozinhas.</p>
     <div class="card form">
@@ -184,6 +183,9 @@
 
   <!-- LOTE -->
   <section id="lote" class="tab">
+    <div class="segctl" role="tablist" aria-label="Como criar">
+      <a href="#adicionar" data-goto="adicionar" role="tab">Uma frase</a><a href="#lote" data-goto="lote" role="tab">Várias frases</a><a href="#doaudio" data-goto="doaudio" role="tab">De um áudio</a>
+    </div>
     <h2 class="tab-title">Crie vários flashcards de uma vez</h2>
     <div class="card form">
       <p>Cole uma frase por linha. Se quiser, escreva a tradução depois de <code>;</code> ou <code>TAB</code>.
@@ -196,6 +198,9 @@
 
   <!-- DO ÁUDIO -->
   <section id="doaudio" class="tab">
+    <div class="segctl" role="tablist" aria-label="Como criar">
+      <a href="#adicionar" data-goto="adicionar" role="tab">Uma frase</a><a href="#lote" data-goto="lote" role="tab">Várias frases</a><a href="#doaudio" data-goto="doaudio" role="tab">De um áudio</a>
+    </div>
     <h2 class="tab-title">Transforme um áudio em flashcards</h2>
     <div class="card form">
       <p>Envie um áudio (música, podcast, mensagem de voz, trecho de série...). Ele é <b>transcrito no seu navegador</b>
@@ -222,6 +227,7 @@
 
   <!-- CARTAS -->
   <section id="cartas" class="tab">
+    <a href="#mais" data-goto="mais" class="back">‹ Mais opções</a>
     <h2 class="tab-title">Todos os seus flashcards</h2>
     <div class="row"><input id="search" placeholder="Pesquisar..."><span id="countMsg" class="muted"></span></div>
     <table id="cardTable"><thead><tr><th>Frase</th><th>Tradução</th><th>Próxima</th><th></th></tr></thead><tbody></tbody></table>
@@ -261,8 +267,19 @@
     </div>
   </section>
 
+  <!-- MAIS -->
+  <section id="mais" class="tab">
+    <h2 class="tab-title">Mais opções</h2>
+    <nav class="card menu" aria-label="Mais opções">
+      <a href="#cartas" data-goto="cartas"><span class="mi" aria-hidden="true">🗂️</span><span><b>Meus flashcards</b><small>Pesquisar, ouvir, editar e apagar</small></span><span class="chev">›</span></a>
+      <a href="#config" data-goto="config"><span class="mi" aria-hidden="true">⚙️</span><span><b>Ajustes</b><small>Idioma, voz, velocidade, novas por dia e backup</small></span><span class="chev">›</span></a>
+      <a href="#conta" data-goto="conta"><span class="mi" aria-hidden="true">👤</span><span><b id="maisConta">Conta</b><small id="maisContaSub">Entrar para sincronizar PC e celular</small></span><span class="chev">›</span></a>
+    </nav>
+  </section>
+
   <!-- CONTA -->
   <section id="conta" class="tab">
+    <a href="#mais" data-goto="mais" class="back">‹ Mais opções</a>
     <h2 class="tab-title">Sua conta e sincronização</h2>
     <div class="card form">
       <div id="accOut">
@@ -285,6 +302,7 @@
 
   <!-- CONFIG -->
   <section id="config" class="tab">
+    <a href="#mais" data-goto="mais" class="back">‹ Mais opções</a>
     <h2 class="tab-title">Ajuste voz, idioma e ritmo de estudo</h2>
     <div class="card form">
       <label>Idioma que você estuda

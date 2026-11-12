@@ -81,7 +81,8 @@
   function renderAccount() {
     $("#accIn").classList.toggle("hidden", !user); $("#accOut").classList.toggle("hidden", !!user);
     const name = user?.user_metadata?.name || user?.email?.split("@")[0] || "";
-    $("#navConta").textContent = user ? "👤 " + name : "👤 Conta";
+    $("#maisConta").textContent = user ? name : "Conta";
+    $("#maisContaSub").textContent = user ? `${user.email} · sincronização ativa` : "Entrar para sincronizar PC e celular";
     if (!user) return status("");
     $("#accName").textContent = name; $("#accEmail").textContent = user.email;
     const t = +localStorage.getItem("anki.lastSyncAt");
