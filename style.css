@@ -1,0 +1,56 @@
+:root {
+  --bg: #f4f5f8; --fg: #1d1f24; --card: #fff; --muted: #6b7280; --border: #dfe2e8;
+  --primary: #3b6cf6; --again: #e5484d; --hard: #f59e0b; --good: #22a06b; --easy: #3b82f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #15171c; --fg: #e8eaee; --card: #1f2229; --muted: #9aa1ad; --border: #333844; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--fg); }
+header { background: var(--card); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+h1 { font-size: 1.2rem; margin: 0; }
+nav { display: flex; flex-wrap: wrap; gap: 4px; }
+nav button { border: none; background: none; padding: 8px 12px; border-radius: 8px; }
+nav button.active { background: var(--primary); color: #fff; }
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+.tab { display: none; } .tab.active { display: block; }
+.hidden { display: none !important; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.big { font-size: 1.6rem; line-height: 1.4; text-align: center; margin: 12px 0; }
+#studyBox { text-align: center; }
+#back { font-size: 1.2rem; border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px; color: var(--muted); }
+#back .main { color: var(--fg); font-size: 1.3rem; }
+.muted { color: var(--muted); }
+button, .btnlike { font: inherit; padding: 9px 14px; border-radius: 9px; border: 1px solid var(--border); background: var(--card); color: var(--fg); cursor: pointer; }
+button:hover, .btnlike:hover { filter: brightness(0.95); }
+button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+button.icon { font-size: 1.5rem; border-radius: 50%; width: 52px; height: 52px; padding: 0; }
+.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
+.grades button { color: #fff; border: none; display: flex; flex-direction: column; align-items: center; }
+.grades small { opacity: .85; font-size: .75rem; }
+.again { background: var(--again); } .hard { background: var(--hard); } .good { background: var(--good); } .easy { background: var(--easy); }
+.form label { display: block; margin-bottom: 12px; }
+.form label.inline { display: flex; gap: 8px; align-items: center; }
+textarea, input:not([type=radio]):not([type=checkbox]):not([type=range]):not([type=file]), select {
+  width: 100%; font: inherit; padding: 9px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); margin-top: 4px;
+}
+input[type=range] { width: 100%; }
+fieldset { border: 1px solid var(--border); border-radius: 10px; margin: 0 0 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.row input { flex: 1; min-width: 160px; }
+table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; font-size: .92rem; }
+th, td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+td button { padding: 4px 8px; }
+.seg { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.seg textarea { margin: 0; }
+.seg .time { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+.seg button { padding: 6px 9px; }
+.small { font-size: .82rem; }
+.overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: auto; }
+.authbox { width: 100%; max-width: 380px; }
+.authbox h2 { margin-top: 0; }
+button.wide { width: 100%; }
+.authlinks { display: flex; flex-direction: column; gap: 8px; font-size: .9rem; }
+a { color: var(--primary); }
+code { background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+@media (max-width: 520px) { .grades { grid-template-columns: repeat(2, 1fr); } .big { font-size: 1.3rem; } th:nth-child(3), td:nth-child(3) { display: none; } }

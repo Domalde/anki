@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Meu Anki</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>🧠 Meu Anki</h1>
+  <nav>
+    <button data-tab="estudar" class="active">Estudar</button>
+    <button data-tab="adicionar">Adicionar</button>
+    <button data-tab="lote">Em lote</button>
+    <button data-tab="doaudio">Do áudio</button>
+    <button data-tab="cartas">Cartas</button>
+    <button data-tab="config">Config</button>
+    <button data-tab="conta" id="navConta">👤 Conta</button>
+  </nav>
+  <span id="syncStatus" class="muted small"></span>
+</header>
+
+<!-- LOGIN (aparece quando o Supabase está configurado e ninguém entrou) -->
+<div id="authScreen" class="overlay hidden">
+  <div class="card form authbox">
+    <h2 id="authTitle">Entrar</h2>
+    <label id="authNameRow" class="hidden">Seu nome<input id="authName" autocomplete="name"></label>
+    <label>E-mail<input id="authEmail" type="email" autocomplete="email"></label>
+    <label id="authPassRow">Senha<input id="authPass" type="password" autocomplete="current-password" minlength="6"></label>
+    <button id="authGo" class="primary wide">Entrar</button>
+    <p id="authMsg" class="muted"></p>
+    <p class="authlinks">
+      <a href="#" id="authToggle">Não tem conta? Criar conta</a>
+      <a href="#" id="authForgot">Esqueci minha senha</a>
+      <a href="#" id="authGuest">Usar sem conta (só neste navegador)</a>
+    </p>
+  </div>
+</div>
+
+<main>
+  <!-- ESTUDAR -->
+  <section id="estudar" class="tab active">
+    <p id="stats" class="muted"></p>
+    <div id="studyBox" class="card hidden">
+      <div id="front" class="big"></div>
+      <button id="playBtn" class="icon" title="Ouvir (tecla P)">🔊</button>
+      <div id="back" class="hidden"></div>
+      <div id="showRow"><button id="showBtn" class="primary">Mostrar resposta (espaço)</button></div>
+      <div id="gradeRow" class="hidden grades">
+        <button data-g="0" class="again">Errei<small id="iv0"></small></button>
+        <button data-g="1" class="hard">Difícil<small id="iv1"></small></button>
+        <button data-g="2" class="good">Bom<small id="iv2"></small></button>
+        <button data-g="3" class="easy">Fácil<small id="iv3"></small></button>
+      </div>
+    </div>
+    <div id="doneBox" class="card hidden"><p class="big">🎉 Nada para revisar agora.</p><p class="muted">Adicione frases ou volte mais tarde.</p></div>
+  </section>
+
+  <!-- ADICIONAR -->
+  <section id="adicionar" class="tab">
+    <div class="card form">
+      <label>Frase (no idioma que você estuda)
+        <textarea id="inFront" rows="2" placeholder="Ex.: I would like a cup of coffee."></textarea>
+      </label>
+      <div class="row">
+        <button id="btnSpeak">🔊 Ouvir</button>
+        <button id="btnTranslate">🌐 Traduzir automático</button>
+        <button id="btnExample">💡 Buscar frase de exemplo (palavra)</button>
+      </div>
+      <label>Tradução / significado
+        <textarea id="inBack" rows="2" placeholder="Preenchido automaticamente se você clicar em Traduzir"></textarea>
+      </label>
+      <fieldset>
+        <legend>Áudio</legend>
+        <label class="inline"><input type="radio" name="audioMode" value="tts" checked> Voz automática do navegador (grátis)</label>
+        <label class="inline"><input type="radio" name="audioMode" value="rec"> Gravar minha voz / colar áudio</label>
+        <div id="recBox" class="hidden row">
+          <button id="btnRec">⏺ Gravar</button>
+          <input type="file" id="audioFile" accept="audio/*">
+          <audio id="recPreview" controls class="hidden"></audio>
+        </div>
+      </fieldset>
+      <label>Etiquetas (opcional)<input id="inTags" placeholder="viagem, verbos"></label>
+      <div class="row"><button id="btnAdd" class="primary">➕ Adicionar carta</button><span id="addMsg" class="muted"></span></div>
+    </div>
+  </section>
+
+  <!-- LOTE -->
+  <section id="lote" class="tab">
+    <div class="card form">
+      <p>Cole uma frase por linha. Se quiser, escreva a tradução depois de <code>;</code> ou <code>TAB</code>.
+      Linhas sem tradução são traduzidas automaticamente. O áudio é gerado na hora de estudar.</p>
+      <textarea id="bulkIn" rows="10" placeholder="Where is the train station?&#10;I'm looking for a pharmacy ; Estou procurando uma farmácia&#10;How much does it cost?"></textarea>
+      <label class="inline"><input type="checkbox" id="bulkTranslate" checked> Traduzir automaticamente as linhas sem tradução</label>
+      <div class="row"><button id="btnBulk" class="primary">➕ Adicionar todas</button><span id="bulkMsg" class="muted"></span></div>
+    </div>
+  </section>
+
+  <!-- DO ÁUDIO -->
+  <section id="doaudio" class="tab">
+    <div class="card form">
+      <p>Envie um áudio (música, podcast, mensagem de voz, trecho de série...). Ele é <b>transcrito no seu navegador</b>
+        e cada frase vira uma carta <b>com o recorte do áudio original</b>. Nada é enviado para servidores.</p>
+      <label>Arquivo de áudio ou vídeo <input type="file" id="trFile" accept="audio/*,video/*"></label>
+      <audio id="trPreview" controls class="hidden"></audio>
+      <label>Qualidade da transcrição
+        <select id="trModel">
+          <option value="Xenova/whisper-tiny">Rápida (~40 MB)</option>
+          <option value="Xenova/whisper-base" selected>Boa (~75 MB) — recomendado</option>
+          <option value="Xenova/whisper-small">Ótima (~250 MB, mais lenta)</option>
+        </select>
+      </label>
+      <label class="inline"><input type="checkbox" id="trSplit" checked> Uma carta por frase (desmarque para criar uma carta só com o áudio inteiro)</label>
+      <div class="row"><button id="btnTranscribe" class="primary">📝 Transcrever</button><span id="trMsg" class="muted"></span></div>
+    </div>
+    <div id="trResult" class="card form hidden">
+      <p class="muted">Revise o texto, desmarque o que não quiser e clique em criar. A tradução é feita automaticamente.</p>
+      <div id="trList"></div>
+      <label>Etiquetas (opcional)<input id="trTags" placeholder="podcast, música..."></label>
+      <div class="row"><button id="btnTrCreate" class="primary">➕ Criar cartas</button><span id="trCreateMsg" class="muted"></span></div>
+    </div>
+  </section>
+
+  <!-- CARTAS -->
+  <section id="cartas" class="tab">
+    <div class="row"><input id="search" placeholder="Pesquisar..."><span id="countMsg" class="muted"></span></div>
+    <table id="cardTable"><thead><tr><th>Frase</th><th>Tradução</th><th>Próxima</th><th></th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- CONTA -->
+  <section id="conta" class="tab">
+    <div class="card form">
+      <div id="accOut">
+        <p>Você está usando o app <b>sem conta</b>: as cartas ficam só neste navegador.</p>
+        <p id="accNoCfg" class="muted hidden">O login ainda não foi configurado (falta preencher <code>supabase-config.js</code>).</p>
+        <button id="accLogin" class="primary">Entrar / criar conta</button>
+      </div>
+      <div id="accIn" class="hidden">
+        <p>Conectado como <b id="accName"></b> (<span id="accEmail"></span>)</p>
+        <p class="muted" id="accSync"></p>
+        <div class="row">
+          <button id="accSyncNow">🔄 Sincronizar agora</button>
+          <button id="accPass">🔑 Trocar senha</button>
+          <button id="accLogout">🚪 Sair</button>
+        </div>
+        <p class="muted small">Ao sair, as cartas são apagadas deste navegador, mas continuam salvas na sua conta.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIG -->
+  <section id="config" class="tab">
+    <div class="card form">
+      <label>Idioma que você estuda
+        <select id="cfgLang">
+          <option value="en-US">Inglês (EUA)</option><option value="en-GB">Inglês (Reino Unido)</option>
+          <option value="es-ES">Espanhol</option><option value="fr-FR">Francês</option>
+          <option value="de-DE">Alemão</option><option value="it-IT">Italiano</option>
+          <option value="ja-JP">Japonês</option><option value="ko-KR">Coreano</option>
+          <option value="zh-CN">Chinês</option><option value="ru-RU">Russo</option>
+        </select>
+      </label>
+      <label>Voz <select id="cfgVoice"></select></label>
+      <label>Velocidade da voz: <span id="rateVal"></span><input type="range" id="cfgRate" min="0.5" max="1.3" step="0.05"></label>
+      <label class="inline"><input type="checkbox" id="cfgAutoplay"> Tocar áudio automaticamente ao mostrar a carta</label>
+      <label class="inline"><input type="checkbox" id="cfgReverse"> Modo inverso (mostra a tradução, você lembra a frase)</label>
+      <label>Novas cartas por dia <input type="number" id="cfgNew" min="1" max="500"></label>
+      <button id="btnTestVoice">🔊 Testar voz</button>
+    </div>
+    <div class="card form">
+      <h3>Backup</h3>
+      <p class="muted">Os dados ficam salvos só neste navegador. Exporte de vez em quando para não perder.</p>
+      <div class="row">
+        <button id="btnExport">⬇ Exportar backup</button>
+        <label class="btnlike">⬆ Importar backup<input type="file" id="importFile" accept=".json" hidden></label>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script src="sync.js"></script>
+</body>
+</html>
