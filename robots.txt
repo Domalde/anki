@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /supabase-setup.sql
+
+Sitemap: https://anki.stmleandro.workers.dev/sitemap.xml

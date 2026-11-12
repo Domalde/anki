@@ -55,6 +55,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 /* ===================== Abas ===================== */
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+document.addEventListener("click", e => { const a = e.target.closest("[data-goto]"); if (a) { e.preventDefault(); showTab(a.dataset.goto); } });
 function showTab(id) {
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.id === id));

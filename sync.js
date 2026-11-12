@@ -23,7 +23,7 @@
   const pending = () => cards.some(c => S.synced[c.id] !== c.updated) || tombs.length > 0;
   let sb = null, user = null, syncing = false, again = false, timer = null;
 
-  if (!configured) { $("#accNoCfg").classList.remove("hidden"); $("#accLogin").disabled = true; return; }
+  if (!configured) { $("#accNoCfg").classList.remove("hidden"); $("#accLogin").disabled = true; $("#authScreen").classList.add("hidden"); return; }
   sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
   /* ---------- Tela de login ---------- */
@@ -31,8 +31,8 @@
   const showAuth = on => $("#authScreen").classList.toggle("hidden", !on);
   function setMode(m) {
     mode = m;
-    $("#authTitle").textContent = { login: "Entrar", signup: "Criar conta", forgot: "Recuperar senha" }[m];
-    $("#authGo").textContent = { login: "Entrar", signup: "Criar conta", forgot: "Enviar link por e-mail" }[m];
+    $("#authTitle").textContent = { login: "Acesse seus flashcards", signup: "Crie sua conta grátis", forgot: "Recupere sua senha" }[m];
+    $("#authGo").textContent = { login: "Entrar", signup: "Criar conta grátis", forgot: "Enviar link de recuperação" }[m];
     $("#authNameRow").classList.toggle("hidden", m !== "signup");
     $("#authPassRow").classList.toggle("hidden", m === "forgot");
     $("#authToggle").textContent = m === "login" ? "Não tem conta? Criar conta" : "Já tem conta? Entrar";
@@ -48,6 +48,11 @@
 
   $("#authToggle").onclick = e => { e.preventDefault(); setMode(mode === "login" ? "signup" : "login"); };
   $("#authForgot").onclick = e => { e.preventDefault(); setMode("forgot"); };
+  // Botões "Criar conta grátis" da página inicial: abrem o formulário já no modo cadastro
+  document.querySelectorAll("[data-auth]").forEach(a => a.onclick = e => {
+    e.preventDefault(); setMode(a.dataset.auth);
+    $("#entrar").scrollIntoView({ behavior: "smooth", block: "center" }); $("#authName").focus({ preventScroll: true });
+  });
   $("#authGuest").onclick = e => { e.preventDefault(); localStorage.setItem("anki.guest", "1"); showAuth(false); };
   $("#accLogin").onclick = () => { setMode("login"); showAuth(true); };
   $("#authScreen").onkeydown = e => { if (e.key === "Enter") $("#authGo").click(); };

@@ -4,12 +4,39 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<title>Meu Anki</title>
+<title>Flashcards com áudio e repetição espaçada grátis | Meu Anki</title>
+<meta name="description" content="Flashcards online grátis para aprender inglês e outros idiomas: áudio nativo, tradução automática e repetição espaçada que mostra onde você erra.">
+<link rel="canonical" href="https://anki.stmleandro.workers.dev/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#3b6cf6">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Meu Anki">
+<meta property="og:url" content="https://anki.stmleandro.workers.dev/">
+<meta property="og:title" content="Flashcards com áudio e repetição espaçada grátis">
+<meta property="og:description" content="Aprenda inglês com flashcards que falam, traduzem sozinhos e mostram onde você mais erra. Grátis, no navegador e no celular.">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Meu Anki",
+  "url": "https://anki.stmleandro.workers.dev/",
+  "description": "Flashcards online grátis com áudio nativo, tradução automática, transcrição de áudio e repetição espaçada com análise de desempenho.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Qualquer navegador (Windows, Android, iOS, macOS)",
+  "inLanguage": "pt-BR",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+  "featureList": ["Repetição espaçada", "Áudio nativo automático", "Tradução automática", "Transcrição de áudio em cartões", "Análise de pontos fracos", "Sincronização entre PC e celular"]
+}
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <h1>🧠 Meu Anki</h1>
+  <div class="brand" aria-label="Meu Anki">🧠 Meu Anki</div>
   <nav>
     <button data-tab="estudar" class="active">Estudar</button>
     <button data-tab="adicionar">Adicionar</button>
@@ -23,10 +50,67 @@
   <span id="syncStatus" class="muted small"></span>
 </header>
 
-<!-- LOGIN (aparece quando o Supabase está configurado e ninguém entrou) -->
-<div id="authScreen" class="overlay hidden">
-  <div class="card form authbox">
-    <h2 id="authTitle">Entrar</h2>
+<!-- PÁGINA INICIAL + LOGIN: visível para visitantes e para o Google; some para quem já entrou ou usa sem conta -->
+<div id="authScreen" class="overlay">
+  <div class="landing">
+  <article class="lp">
+    <p class="brand lp-brand">🧠 Meu Anki</p>
+    <h1>Flashcards com áudio para aprender inglês sem decoreba</h1>
+    <p class="lp-lead">Crie <strong>flashcards online grátis</strong> com áudio nativo e tradução automática. A repetição espaçada mostra cada frase na hora certa, e a análise aponta exatamente onde você erra.</p>
+    <p class="lp-cta"><a href="#entrar" class="btn primary" data-auth="signup">Criar conta grátis</a> <a href="#como-funciona" class="btn">Ver como funciona</a></p>
+    <ul class="lp-proof"><li>✔ 100% grátis</li><li>✔ Sem instalar nada</li><li>✔ PC e celular sincronizados</li></ul>
+
+    <section id="como-funciona">
+      <h2>Seus flashcards com áudio prontos em 3 passos</h2>
+      <ol class="lp-steps">
+        <li><b>Cole frases ou envie um áudio.</b> A tradução e a pronúncia saem automaticamente.</li>
+        <li><b>Revise poucos minutos por dia.</b> Cada flashcard volta pouco antes de você esquecer.</li>
+        <li><b>Corrija seus pontos fracos.</b> A análise mostra onde você erra e cria um treino só com isso.</li>
+      </ol>
+    </section>
+
+    <section id="recursos">
+      <h2>Por que estes flashcards ensinam mais rápido</h2>
+      <div class="lp-grid">
+        <div><h3>🔊 Pronúncia nativa em cada cartão</h3><p>Todo flashcard fala com sotaque nativo, sem você gravar nada. Também dá para usar a sua própria voz.</p></div>
+        <div><h3>🌐 Tradução automática</h3><p>Escreva só a frase em inglês. A tradução para o português é preenchida sozinha, uma frase ou uma lista inteira.</p></div>
+        <div><h3>⏱️ Repetição espaçada que se adapta a você</h3><p>Errou? O cartão volta logo. Acertou fácil? Ele espera mais. Você revisa só o necessário.</p></div>
+        <div><h3>📊 Análise dos seus erros</h3><p>Descubra se o problema são phrasal verbs, tempos verbais, frases longas ou palavras específicas, e treine só esse ponto.</p></div>
+        <div><h3>🎧 Podcast e música viram flashcards</h3><p>Envie um áudio: ele é transcrito no seu navegador e cada frase vira um cartão com o trecho original.</p></div>
+        <div><h3>📱 PC e celular sincronizados</h3><p>Estude no computador e continue no celular. Funciona também sem internet e sincroniza depois.</p></div>
+      </div>
+    </section>
+
+    <section id="perguntas">
+      <h2>Perguntas frequentes sobre os flashcards</h2>
+      <h3>Os flashcards são grátis?</h3>
+      <p>Sim. Criar conta, adicionar cartões, ouvir o áudio e ver a análise não custa nada.</p>
+      <h3>Preciso instalar algum programa?</h3>
+      <p>Não. Os flashcards funcionam no navegador do computador e do celular. No celular, use “Adicionar à tela inicial” para abrir como um aplicativo.</p>
+      <h3>O que é repetição espaçada?</h3>
+      <p>É uma técnica de memorização que mostra cada cartão em intervalos cada vez maiores, pouco antes de você esquecer. Assim você lembra mais estudando menos tempo.</p>
+      <h3>Serve para outros idiomas além do inglês?</h3>
+      <p>Sim: espanhol, francês, alemão, italiano, japonês, coreano, chinês e russo têm áudio e tradução. A análise gramatical detalhada é feita para o inglês.</p>
+      <h3>Meus cartões ficam salvos?</h3>
+      <p>Com uma conta, seus flashcards, áudios e progresso ficam salvos na nuvem. Sem conta, eles ficam só no navegador que você usou. <a href="#entrar" data-auth="signup">Crie sua conta</a> para não perder nada.</p>
+    </section>
+
+    <section id="comecar" class="lp-final">
+      <h2>Crie seu primeiro flashcard com áudio em 1 minuto</h2>
+      <p>Cole uma frase em inglês, ouça a pronúncia e comece a revisar hoje. Sem cartão de crédito e sem instalação.</p>
+      <a href="#entrar" class="btn primary" data-auth="signup">Criar conta grátis</a>
+    </section>
+
+    <footer class="lp-foot">
+      <nav aria-label="Nesta página">
+        <a href="#como-funciona">Como funciona</a> · <a href="#recursos">Recursos</a> · <a href="#perguntas">Perguntas frequentes</a> · <a href="#entrar" data-auth="login">Entrar</a>
+      </nav>
+      <p>Meu Anki: flashcards com áudio e repetição espaçada, grátis no navegador.</p>
+    </footer>
+  </article>
+
+  <aside id="entrar" class="card form authbox">
+    <h2 id="authTitle">Acesse seus flashcards</h2>
     <label id="authNameRow" class="hidden">Seu nome<input id="authName" autocomplete="name"></label>
     <label>E-mail<input id="authEmail" type="email" autocomplete="email"></label>
     <label id="authPassRow">Senha<input id="authPass" type="password" autocomplete="current-password" minlength="6"></label>
@@ -35,14 +119,21 @@
     <p class="authlinks">
       <a href="#" id="authToggle">Não tem conta? Criar conta</a>
       <a href="#" id="authForgot">Esqueci minha senha</a>
-      <a href="#" id="authGuest">Usar sem conta (só neste navegador)</a>
+      <a href="#" id="authGuest">Testar sem conta (só neste navegador)</a>
     </p>
+  </aside>
   </div>
 </div>
+<script>
+  // Quem já entrou (ou escolheu testar sem conta) vai direto para o app, sem ver a página inicial piscar
+  try { if (localStorage.getItem("anki.guest") || Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k)))
+    document.getElementById("authScreen").classList.add("hidden"); } catch (e) {}
+</script>
 
 <main>
   <!-- ESTUDAR -->
   <section id="estudar" class="tab active">
+    <h2 class="tab-title">Revise seus flashcards de hoje</h2>
     <p id="stats" class="muted"></p>
     <div id="practiceBar" class="practice hidden"><span id="practiceInfo"></span><button id="practiceExit">Encerrar treino</button></div>
     <div id="studyBox" class="card hidden">
@@ -57,11 +148,13 @@
         <button data-g="3" class="easy">Fácil<small id="iv3"></small></button>
       </div>
     </div>
-    <div id="doneBox" class="card hidden"><p class="big">🎉 Nada para revisar agora.</p><p class="muted">Adicione frases ou volte mais tarde.</p></div>
+    <div id="doneBox" class="card hidden"><p class="big">🎉 Revisões de hoje concluídas!</p><p class="muted">Volte amanhã ou <a href="#" data-goto="adicionar">crie novos flashcards</a> para continuar aprendendo.</p></div>
   </section>
 
   <!-- ADICIONAR -->
   <section id="adicionar" class="tab">
+    <h2 class="tab-title">Crie um flashcard com áudio</h2>
+    <p class="tab-sub">Escreva a frase: a tradução e a pronúncia saem sozinhas.</p>
     <div class="card form">
       <label>Frase (no idioma que você estuda)
         <textarea id="inFront" rows="2" placeholder="Ex.: I would like a cup of coffee."></textarea>
@@ -75,7 +168,7 @@
         <textarea id="inBack" rows="2" placeholder="Preenchido automaticamente se você clicar em Traduzir"></textarea>
       </label>
       <fieldset>
-        <legend>Áudio</legend>
+        <legend>Áudio do flashcard</legend>
         <label class="inline"><input type="radio" name="audioMode" value="tts" checked> Voz automática do navegador (grátis)</label>
         <label class="inline"><input type="radio" name="audioMode" value="rec"> Gravar minha voz / colar áudio</label>
         <div id="recBox" class="hidden row">
@@ -91,6 +184,7 @@
 
   <!-- LOTE -->
   <section id="lote" class="tab">
+    <h2 class="tab-title">Crie vários flashcards de uma vez</h2>
     <div class="card form">
       <p>Cole uma frase por linha. Se quiser, escreva a tradução depois de <code>;</code> ou <code>TAB</code>.
       Linhas sem tradução são traduzidas automaticamente. O áudio é gerado na hora de estudar.</p>
@@ -102,6 +196,7 @@
 
   <!-- DO ÁUDIO -->
   <section id="doaudio" class="tab">
+    <h2 class="tab-title">Transforme um áudio em flashcards</h2>
     <div class="card form">
       <p>Envie um áudio (música, podcast, mensagem de voz, trecho de série...). Ele é <b>transcrito no seu navegador</b>
         e cada frase vira uma carta <b>com o recorte do áudio original</b>. Nada é enviado para servidores.</p>
@@ -127,45 +222,48 @@
 
   <!-- CARTAS -->
   <section id="cartas" class="tab">
+    <h2 class="tab-title">Todos os seus flashcards</h2>
     <div class="row"><input id="search" placeholder="Pesquisar..."><span id="countMsg" class="muted"></span></div>
     <table id="cardTable"><thead><tr><th>Frase</th><th>Tradução</th><th>Próxima</th><th></th></tr></thead><tbody></tbody></table>
   </section>
 
   <!-- ANÁLISE -->
   <section id="analise" class="tab">
+    <h2 class="tab-title">Onde você erra e como melhorar</h2>
     <div id="anWarmup" class="card hidden"></div>
     <div id="anKpis" class="kpis"></div>
     <div class="card">
-      <h3>📌 O que melhorar agora</h3>
+      <h3>📌 Faça isto para errar menos</h3>
       <div id="anRecs"></div>
     </div>
     <div class="card">
-      <h3>Onde você erra mais</h3>
+      <h3>Tipos de frase com mais erros</h3>
       <p class="muted small">Taxa de erro ("Errei") por tipo de frase nos últimos 90 dias. A linha tracejada é a sua média.</p>
       <div id="anCats"></div>
     </div>
     <div class="grid2">
       <div class="card">
-        <h3>Palavras que mais te derrubam</h3>
+        <h3>Palavras que mais causam erros</h3>
         <div id="anWords"></div>
       </div>
       <div class="card">
-        <h3>Cartas-problema</h3>
+        <h3>Flashcards que você mais erra</h3>
         <div id="anLeeches"></div>
       </div>
     </div>
     <div class="card">
-      <h3>Respostas por dia (últimos 30 dias)</h3>
+      <h3>Seu ritmo de estudo nos últimos 30 dias</h3>
       <div id="anDaily"></div>
     </div>
     <div class="card">
-      <h3>Revisões previstas (próximos 7 dias)</h3>
+      <h3>Revisões agendadas para os próximos 7 dias</h3>
       <div id="anForecast"></div>
     </div>
   </section>
 
   <!-- CONTA -->
   <section id="conta" class="tab">
+    <h2 class="tab-title">Sua conta e sincronização</h2>
     <div class="card form">
       <div id="accOut">
         <p>Você está usando o app <b>sem conta</b>: as cartas ficam só neste navegador.</p>
@@ -187,6 +285,7 @@
 
   <!-- CONFIG -->
   <section id="config" class="tab">
+    <h2 class="tab-title">Ajuste voz, idioma e ritmo de estudo</h2>
     <div class="card form">
       <label>Idioma que você estuda
         <select id="cfgLang">
@@ -205,7 +304,7 @@
       <button id="btnTestVoice">🔊 Testar voz</button>
     </div>
     <div class="card form">
-      <h3>Backup</h3>
+      <h3>Backup dos seus flashcards</h3>
       <p class="muted">Os dados ficam salvos só neste navegador. Exporte de vez em quando para não perder.</p>
       <div class="row">
         <button id="btnExport">⬇ Exportar backup</button>
