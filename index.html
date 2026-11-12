@@ -16,6 +16,7 @@
     <button data-tab="lote">Em lote</button>
     <button data-tab="doaudio">Do áudio</button>
     <button data-tab="cartas">Cartas</button>
+    <button data-tab="analise">Análise</button>
     <button data-tab="config">Config</button>
     <button data-tab="conta" id="navConta">👤 Conta</button>
   </nav>
@@ -43,6 +44,7 @@
   <!-- ESTUDAR -->
   <section id="estudar" class="tab active">
     <p id="stats" class="muted"></p>
+    <div id="practiceBar" class="practice hidden"><span id="practiceInfo"></span><button id="practiceExit">Encerrar treino</button></div>
     <div id="studyBox" class="card hidden">
       <div id="front" class="big"></div>
       <button id="playBtn" class="icon" title="Ouvir (tecla P)">🔊</button>
@@ -129,6 +131,39 @@
     <table id="cardTable"><thead><tr><th>Frase</th><th>Tradução</th><th>Próxima</th><th></th></tr></thead><tbody></tbody></table>
   </section>
 
+  <!-- ANÁLISE -->
+  <section id="analise" class="tab">
+    <div id="anWarmup" class="card hidden"></div>
+    <div id="anKpis" class="kpis"></div>
+    <div class="card">
+      <h3>📌 O que melhorar agora</h3>
+      <div id="anRecs"></div>
+    </div>
+    <div class="card">
+      <h3>Onde você erra mais</h3>
+      <p class="muted small">Taxa de erro ("Errei") por tipo de frase nos últimos 90 dias. A linha tracejada é a sua média.</p>
+      <div id="anCats"></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Palavras que mais te derrubam</h3>
+        <div id="anWords"></div>
+      </div>
+      <div class="card">
+        <h3>Cartas-problema</h3>
+        <div id="anLeeches"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Respostas por dia (últimos 30 dias)</h3>
+      <div id="anDaily"></div>
+    </div>
+    <div class="card">
+      <h3>Revisões previstas (próximos 7 dias)</h3>
+      <div id="anForecast"></div>
+    </div>
+  </section>
+
   <!-- CONTA -->
   <section id="conta" class="tab">
     <div class="card form">
@@ -184,5 +219,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>
 <script src="app.js"></script>
 <script src="sync.js"></script>
+<script src="stats.js"></script>
 </body>
 </html>

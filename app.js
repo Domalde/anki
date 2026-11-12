@@ -60,6 +60,7 @@ function showTab(id) {
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.id === id));
   if (id === "estudar") nextCard();
   if (id === "cartas") renderTable();
+  if (id === "analise") window.renderStats?.();
 }
 
 /* ===================== Áudio / voz ===================== */
@@ -169,20 +170,32 @@ function newCard(front, back, extra = {}) {
   return { id: uid(), front: front.trim(), back: (back || "").trim(), tags: "", created: Date.now(),
     due: Date.now(), interval: 0, ease: 2.5, reps: 0, lapses: 0, seen: false, ...extra };
 }
+// reps = 0 → carta em aprendizado (nova ou reaprendendo depois de um erro)
+// relearn = intervalo (dias) que a carta recupera ao acertar depois de um erro (40% do que tinha)
 function schedule(c, g, preview = false) {
-  let { interval: iv, ease, reps, lapses } = c, due;
-  if (g === 0) { lapses += reps > 0 ? 1 : 0; reps = 0; iv = 0; ease = Math.max(1.3, ease - 0.2); due = Date.now() + MIN; }
-  else if (g === 1) {
-    ease = Math.max(1.3, ease - 0.15);
-    if (reps === 0) { iv = 0; due = Date.now() + 6 * MIN; }
-    else { iv = Math.max(1, Math.round(iv * 1.2)); reps++; due = Date.now() + iv * DAY; }
-  } else if (g === 2) {
-    iv = reps === 0 ? 1 : reps === 1 ? 3 : Math.round(iv * ease); reps++; due = Date.now() + iv * DAY;
-  } else {
-    ease += 0.15; iv = reps === 0 ? 4 : Math.round(Math.max(iv, 1) * ease * 1.3); reps++; due = Date.now() + iv * DAY;
+  let { interval: iv, ease, reps, lapses } = c, relearn = c.relearn || 0, due;
+  const now = Date.now();
+  if (g === 0) {                                   // Errei
+    if (reps > 0) { lapses++; relearn = Math.max(1, Math.round(iv * 0.4)); }
+    reps = 0; iv = 0; ease = Math.max(1.3, ease - 0.2); due = now + MIN;
+  } else if (reps === 0) {                         // aprendendo / reaprendendo
+    if (g === 1) due = now + 6 * MIN;
+    else {
+      const base = relearn || 1;
+      iv = g === 2 ? base : relearn ? Math.max(base + 1, Math.round(base * 1.5)) : 4;
+      if (g === 3) ease += 0.15;
+      reps = 1; relearn = 0; due = now + iv * DAY;
+    }
+  } else {                                         // revisão: Difícil < Bom < Fácil, sempre
+    const hard = Math.max(1, Math.round(iv * 1.2));
+    const good = Math.max(hard + 1, Math.round(iv * ease));
+    const easy = Math.max(good + 1, Math.round(iv * (ease + 0.15) * 1.3));
+    iv = [0, hard, good, easy][g];
+    ease = g === 1 ? Math.max(1.3, ease - 0.15) : g === 3 ? ease + 0.15 : ease;
+    reps++; due = now + iv * DAY;
   }
-  if (preview) return due - Date.now();
-  Object.assign(c, { interval: iv, ease, reps, lapses, due, seen: true });
+  if (preview) return due - now;
+  Object.assign(c, { interval: iv, ease, reps, lapses, due, seen: true, relearn });
 }
 const fmt = ms => ms < 60 * MIN ? Math.round(ms / MIN) + " min" : ms < DAY ? Math.round(ms / 36e5) + " h" :
   ms < 30 * DAY ? Math.round(ms / DAY) + " d" : ms < 365 * DAY ? (ms / (30 * DAY)).toFixed(1) + " m" : (ms / (365 * DAY)).toFixed(1) + " a";
@@ -200,10 +213,36 @@ function queue() {
   const soon = cards.filter(c => c.seen && c.due > now && c.due < now + 20 * MIN && c.interval === 0).sort((a, b) => a.due - b.due);
   return { review, fresh, soon };
 }
+// Treino focado (vem da aba Análise): repassa um grupo de cartas sem mexer no agendamento
+let practice = null, shownAt = 0, revealedAt = 0;
+function startPractice(title, ids) {
+  const pool = ids.filter(id => cards.some(c => c.id === id)).sort(() => Math.random() - 0.5).slice(0, 30);
+  if (!pool.length) return alert("Nenhuma carta para praticar nesse grupo.");
+  practice = { title, ids: pool, total: pool.length };
+  showTab("estudar");
+}
+function endPractice(done) {
+  practice = null;
+  if (done) alert("🎯 Treino concluído! Volte na aba Análise para ver sua evolução.");
+  nextCard();
+}
+$("#practiceExit").onclick = () => endPractice(false);
+
 function nextCard() {
-  const { review, fresh, soon } = queue();
-  $("#stats").textContent = `Revisar: ${review.length} · Novas: ${fresh.length} · Total: ${cards.length} cartas`;
-  current = review[0] || fresh[0] || soon[0] || null;
+  let review = [], fresh = [], soon = [];
+  if (practice) {
+    if (!practice.ids.length) return endPractice(true);
+    current = cards.find(c => c.id === practice.ids[0]);
+    if (!current) { practice.ids.shift(); return nextCard(); }
+    $("#stats").textContent = "";
+    $("#practiceInfo").textContent = `🎯 Treino: ${practice.title} — faltam ${practice.ids.length} de ${practice.total} (não altera o agendamento)`;
+  } else {
+    ({ review, fresh, soon } = queue());
+    $("#stats").textContent = `Revisar: ${review.length} · Novas: ${fresh.length} · Total: ${cards.length} cartas`;
+    current = review[0] || fresh[0] || soon[0] || null;
+  }
+  $("#practiceBar").classList.toggle("hidden", !practice);
+  shownAt = Date.now(); revealedAt = 0;
   $("#studyBox").classList.toggle("hidden", !current);
   $("#doneBox").classList.toggle("hidden", !!current);
   if (!current) return;
@@ -214,18 +253,34 @@ function nextCard() {
     ? `<div class="main">${esc(current.front)}</div>`
     : `<div class="main">${esc(current.back) || "<i>(sem tradução)</i>"}</div>`;
   if (current.tags) $("#back").innerHTML += `<p class="muted">🏷 ${esc(current.tags)}</p>`;
-  [0, 1, 2, 3].forEach(g => $("#iv" + g).textContent = fmt(schedule(current, g, true)));
+  [0, 1, 2, 3].forEach(g => $("#iv" + g).textContent = practice ? (g ? "próxima" : "repete") : fmt(schedule(current, g, true)));
   if (cfg.autoplay && !cfg.reverse) playCard(current);
 }
 function reveal() {
   if (!current) return;
+  if (!revealedAt) revealedAt = Date.now();
   $("#back").classList.remove("hidden"); $("#gradeRow").classList.remove("hidden"); $("#showRow").classList.add("hidden");
   if (cfg.autoplay && cfg.reverse) playCard(current);
 }
+// Histórico de cada resposta, usado na Análise:
+// [quando (s), nota 0-3, intervalo antes (dias), tempo pensando (ms), flags: 1=inverso 2=treino 4=nova]
+function logAnswer(c, g) {
+  const think = Math.min(60000, (revealedAt || Date.now()) - shownAt);
+  const flags = (cfg.reverse ? 1 : 0) | (practice ? 2 : 0) | (!c.seen ? 4 : 0);
+  (c.log ||= []).push([Math.round(Date.now() / 1000), g, c.interval || 0, think, flags]);
+  if (c.log.length > 60) c.log.splice(0, c.log.length - 60);
+}
 function grade(g) {
   if (!current) return;
-  if (!current.seen) { resetDaily(); cfg.newCount++; saveCfg(); }
-  schedule(current, g); saveCards(); nextCard();
+  logAnswer(current, g);
+  if (practice) {
+    const id = practice.ids.shift();
+    if (g === 0) practice.ids.push(id);            // errou no treino: volta para o fim da fila
+  } else {
+    if (!current.seen) { resetDaily(); cfg.newCount++; saveCfg(); }
+    schedule(current, g);
+  }
+  saveCards(); nextCard();
 }
 $("#showBtn").onclick = reveal;
 $("#playBtn").onclick = () => current && playCard(current);
